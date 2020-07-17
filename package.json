@@ -1,0 +1,12 @@
+{
+  "name": "repl-game",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/DominickDeJesus/Repl-Game.git",
+  "author": "DominickDejesus <34385118+DominickDejsus@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "nodemon": "^2.0.4",
+    "readline-sync": "^1.4.10"
+  }
+}
