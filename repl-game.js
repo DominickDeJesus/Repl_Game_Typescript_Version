@@ -39,6 +39,16 @@ const player = {
         console.log('-'.repeat(40));
         console.log(`HP: ${this.health} | Grenades: ${this.grenades} | Health Packs: ${this.healthPacks}`);
         console.log('-'.repeat(40));
+    },
+    useHealthpack: function (){
+        if(player.healthPacks > 0){
+            player.health = 10;
+            player.healthPacks--;
+            console.log("***Your health is fully restored***")
+        }
+        else{
+            console.log("***You don't have any health packs***");
+        }
     }
 }
 
@@ -118,19 +128,11 @@ function phase1(){
                 break;
             //Verbally abuse
             case 3:
-                grunt.health = grunt.health - 1;
-                console.log(`***You yell explatives about the grunt's mother***\n***The grunt takes 1 damage***`);
+                console.log(`***You yell insults about the grunt's height***\n***The grunt has been conditioned by adolescent bullying and takes no damage***`);
                 break;
             //Use Medkit
             case 4:
-                if(player.healthPacks > 0){
-                    player.health = 10;
-                    player.healthPacks--;
-                    console.log("***Your health is fully restored***")
-                }
-                else{
-                    console.log("***You are already at full health***");
-                }
+                player.useHealthpack();
                 break;
             case 5:
                 suppliesCheck();
@@ -150,7 +152,7 @@ function phase1(){
         //Grunts turn
         hit = grunt.damageGun();
         player.health = player.health - hit;
-        console.log(`***Grunt fires a round with a plasma pistol***\n***You take ${hit} damage***`);
+        console.log(`***The grunt fires a round with a plasma pistol***\n***You take ${hit} damage***`);
 
         if(player.health <= 0){
             console.log(`***You died, I guess you don't have what it takes to be an ODST***`);
@@ -159,7 +161,7 @@ function phase1(){
     }
 }
 
-//phase 2: elite fight
+//phase 2: Brute fight
 function phase2(){
     console.log("***You move to the body of the dead grunt and confirm the kill***")
     console.log("***You make your way down the street slowly ducking bewteen covers making your way to the objective***")
@@ -186,8 +188,8 @@ function phase2(){
                     hit = player.damageGrenade();
                     brute.health = brute.health - hit;
                     player.grenades--;
-                    console.log(`***You throw a grenade at the grunt***`);
-                    console.log(`The brute takes ${hit} damage`);
+                    console.log(`***You throw a grenade at the brute***`);
+                    console.log(`***The brute takes ${hit} damage***`);
                 }
                 else{
                     console.log("***You don't have any grenades***");
@@ -195,19 +197,12 @@ function phase2(){
                 break;
             //Verbally abuse
             case 3:
-              console.log(`***You yell explatives about the grunt's mother inflicting critical damage to moral***`);
-              brute.health = brute.health -1;
+                brute.health = brute.health -1;
+                console.log(`***You yell that he brute isn't as cool as he thinks he is ***\n***The brute pretends it doesn't hurt him but takes 1 damage***`);
               break;
             //Use Medkit
             case 4:
-                if(player.healthPacks > 0){
-                    player.health = 10;
-                    player.healthPacks--;
-                    console.log("***Your health is fully restored***")
-                }
-                else{
-                    console.log("***You are already at full health***");
-                }
+                player.useHealthpack();
                 break;
             case 5:
                 suppliesCheck();
@@ -225,17 +220,18 @@ function phase2(){
             return 1; // move to next phase
         }
 
-        //Grunts turn
+        //brutes turn
         if(brute.health < brute.health/2){
             hit = brute.damageMele();
+            player.health = player.health - hit;
             console.log("***The brute screams and charges at you with its bear hands***");
             console.log(`***You take ${hit} damage***`);
         } else{
             hit = brute.damageGun();
+            player.health = player.health - hit;
             console.log("***The brute shoots at you with a bruteshot***");
             console.log(`***You take ${hit} damage***`);
         }
-        
         //Player died
         if(player.health <= 0){
             console.log(`***You died, I guess you don't have what it takes to be an ODST***`);
@@ -247,12 +243,13 @@ function phase2(){
 
 //phase 3: hunter fight
 function phase3(){
-    console.log("You see a grunt taking a nap next to a tree.");
+    console.log("***As you finish off the brute, A hunter bursts through the entrance of the building and shrieks***");
     quitGame = false;
     while(!quitGame){
         player.printStats();
         console.log( "What do you want to do?");
         let option = prompt.questionInt( "Options:\n [1] Shoot\n [2] Throw grenade\n [3] Verbally abuse\n [4] Use Medkit\n [5] Search for Supplies\n [6] Quit Level\n" );
+        console.log("\n");
         let hit= 0;
 
         //players turn
@@ -260,60 +257,58 @@ function phase3(){
             //Shoot
             case 1:
                 hit = player.damageGun();
-                grunt.health = grunt.health - hit;
-                console.log(`The grunt takes ${hit} damage`);
+                hunter.health = hunter.health - hit;
+                console.log(`***You shoot at the hunter with your assault rifle***`);
+                console.log(`***The hunter takes ${hit} damage***`);
                 break;
             //throw grenade
             case 2:
                 if(player.grenades > 0){
                     hit = player.damageGrenade();
-                    grunt.health = grunt.health - hit;
+                    hunter.health = hunter.health - hit;
                     player.grenades--;
-                    console.log(`The grunt takes ${hit} damage`);
+                    console.log(`***You throw a grenade at the hunter***`);
+                    console.log(`***The hunter takes ${hit} damage***`);
                 }
                 else{
-                    console.log("You don't have any grenades.");
+                    console.log("***You don't have any grenades***");
                 }          
                 break;
             //Verbally abuse
             case 3:
-              console.log(`You yell explatives about the grunt's mother inflicting critical damage to moral.`);
-              grunt.health = grunt.health -1;
-              break;
-            //Use Medkit
+                hunter.health = hunter.health - 5;
+                console.log(`***You yell profanities about the hunter's mother***\n***The hunter is shocked and takes 5 damage***`);
+                break;
+            //Use health packs
             case 4:
-                if(player.healthPacks > 0){
-                    player.health = 10;
-                    player.healthPacks--;
-                    console.log("Your health is fully restored.")
-                }
-                else{
-                    console.log("You are already at full health.");
-                }
+                player.useHealthpack();
                 break;
             case 5:
                 suppliesCheck();
                 break;
             case 6:
-                console.log("Quiting game.")
+                console.log("Quiting game")
                 return -100;
             default: 
               console.log( "Incorrect input, try again." );
         }
 
-        if(grunt.health <= 0) {
-            console.log(`You killed the grunt.`)
+        if(hunter.health <= 0) {
+            console.log(`***You killed the Hunter***`)
             return 1; // move to next phase
         }
 
-        //Grunts turn
-        hit = grunt.damageGun();
-        player.health = player.health - hit;
-        console.log(`Grunt fires a round with a plasma pistol and you take ${hit} damage.`);
-
-        if(player.health <= 0){
-            console.log(`You died, I guess you don't have what it takes to be an ODST.`);
-            return -100; //get to default branch in the loop
+        //Hunters turn
+        if(hunter.health < hunter.health/2){
+            hit = hunter.damageMele();
+            player.health = player.health - hit;
+            console.log("***The hunter barrels towers and swings its shelid at you***");
+            console.log(`***You take ${hit} damage***`);
+        } else{
+            hit = hunter.damageGun();
+            player.health = player.health - hit;
+            console.log("***The hunter levels its cannon and shoots at you***");
+            console.log(`***You take ${hit} damage***`);
         }
     }
 }
@@ -338,6 +333,7 @@ function suppliesCheck(){
         console.log("You look around but you don't see anything.");
     }
 }
+
 
 //prints the level title
 function printLevel(level){
