@@ -2,36 +2,73 @@ const prompt = require('readline-sync');
 
 //character objects
 const grunt = {
+    maxHP: 5,
     health: 5,
     damageGun: function (){return(Math.floor((Math.random()*2)+1));},
-    reset: function() {this.health = 5;}
+    takeTurn: function(){
+        let dmg = grunt.damageGun();
+        player.health = player.health - dmg;
+        console.log(`***The grunt fires a round with a plasma pistol***\n***You take ${dmg} damage***`);
+    },
+    reset: function() {this.health = this.maxHP;}
+
 }
 
 const brute = {
+    maxHP: 10,
     health: 10,
     damageGun: function (){return(Math.floor((Math.random()*5)+1));},
     damageMele: function (){return(Math.floor((Math.random()*8)+1));},
-    reset: function() {this.health = 10;}
+    takeTurn: function(){
+        let dmg;
+        if(brute.health < (brute.maxHP/2)){
+            dmg = brute.damageMele();
+            player.health = player.health - dmg;
+            console.log("***The brute screams and charges at you with its bear hands***");
+            console.log(`***You take ${dmg} damage***`);
+        } else{
+            dmg = brute.damageGun();
+            player.health = player.health - dmg;
+            console.log("***The brute shoots at you with a bruteshot***");
+            console.log(`***You take ${dmg} damage***`);
+        }
+    },
+    reset: function() {this.health = this.maxHP;}
 }
 
 
 const hunter = {
+    maxHP: 15,
     health: 15,
     damageGun: function (){return(Math.floor((Math.random()*6)+1));},
     damageMele: function (){return(Math.floor((Math.random()*10)+1));},
-    reset: function() {
-        this.health = 15;
+    takeTurn: function(){
+        let dmg;
+        if(hunter.health < (hunter.maxHP/2)){
+            dmg = hunter.damageMele();
+            player.health = player.health - dmg;
+            console.log("***The hunter barrels towards you and swings its shelid at you***");
+            console.log(`***You take ${dmg} damage***`);
+        } else{
+            dmg = hunter.damageGun();
+            player.health = player.health - dmg;
+            console.log("***The hunter levels its cannon and shoots at you***");
+            console.log(`***You take ${dmg} damage***`);
+        }
+    },
+    reset: function() {this.health = this.maxHP;
     }
 }
 
 const player = {
-    health: 10,
+    maxHP: 20,
+    health: 20,
     grenades: 2,
     healthPacks: 1,
     damageGun: function (){return(Math.floor((Math.random()*3)+1));},
     damageGrenade: function (){return(Math.floor((Math.random()*7)+2));},
     reset: function() {
-        this.health = 10;
+        this.health = this.maxHP;
         this.grenades = 2;
         this.healthPacks = 1;
     },
@@ -42,7 +79,7 @@ const player = {
     },
     useHealthpack: function (){
         if(player.healthPacks > 0){
-            player.health = 10;
+            player.health = this.maxHP;
             player.healthPacks--;
             console.log("***Your health is fully restored***")
         }
@@ -100,7 +137,7 @@ function phase1(){
     while(!quitGame){
         player.printStats();
         console.log( "What do you want to do?");
-        let option = prompt.questionInt( "Options:\n [1] Shoot\n [2] Throw grenade\n [3] Verbally abuse\n [4] Use Medkit\n [5] Search for Supplies\n [6] Quit Level\n" );
+        let option = prompt.questionInt( "Options:\n [1] Shoot\n [2] Throw grenade\n [3] Verbally abuse\n [4] Use health pack\n [5] Search for supplies\n [6] Quit level\n" );
         console.log("\n");
         let hit= 0;
 
@@ -134,9 +171,11 @@ function phase1(){
             case 4:
                 player.useHealthpack();
                 break;
+            //Search for supplies
             case 5:
                 suppliesCheck();
                 break;
+            //Quit game
             case 6:
                 console.log("Quiting game")
                 return -100;
@@ -150,12 +189,11 @@ function phase1(){
         }
 
         //Grunts turn
-        hit = grunt.damageGun();
-        player.health = player.health - hit;
-        console.log(`***The grunt fires a round with a plasma pistol***\n***You take ${hit} damage***`);
+        grunt.takeTurn();
 
         if(player.health <= 0){
             console.log(`***You died, I guess you don't have what it takes to be an ODST***`);
+            printLevel(4);
             return -100; //get to default branch in the loop
         }
     }
@@ -198,7 +236,7 @@ function phase2(){
             //Verbally abuse
             case 3:
                 brute.health = brute.health -1;
-                console.log(`***You yell that he brute isn't as cool as he thinks he is ***\n***The brute pretends it doesn't hurt him but takes 1 damage***`);
+                console.log(`***You yell that he brute isn't as cool as he thinks he is***\n***The brute pretends it doesn't hurt him but takes 1 damage***`);
               break;
             //Use Medkit
             case 4:
@@ -221,20 +259,12 @@ function phase2(){
         }
 
         //brutes turn
-        if(brute.health < brute.health/2){
-            hit = brute.damageMele();
-            player.health = player.health - hit;
-            console.log("***The brute screams and charges at you with its bear hands***");
-            console.log(`***You take ${hit} damage***`);
-        } else{
-            hit = brute.damageGun();
-            player.health = player.health - hit;
-            console.log("***The brute shoots at you with a bruteshot***");
-            console.log(`***You take ${hit} damage***`);
-        }
+        brute.takeTurn();
+
         //Player died
         if(player.health <= 0){
             console.log(`***You died, I guess you don't have what it takes to be an ODST***`);
+            printLevel(4);
             return -100; //get to default branch in the loop
         }
     }
@@ -293,22 +323,20 @@ function phase3(){
               console.log( "Incorrect input, try again." );
         }
 
+        //hunter died
         if(hunter.health <= 0) {
             console.log(`***You killed the Hunter***`)
             return 1; // move to next phase
         }
 
         //Hunters turn
-        if(hunter.health < hunter.health/2){
-            hit = hunter.damageMele();
-            player.health = player.health - hit;
-            console.log("***The hunter barrels towers and swings its shelid at you***");
-            console.log(`***You take ${hit} damage***`);
-        } else{
-            hit = hunter.damageGun();
-            player.health = player.health - hit;
-            console.log("***The hunter levels its cannon and shoots at you***");
-            console.log(`***You take ${hit} damage***`);
+        hunter.takeTurn();
+
+        //Player died
+        if(player.health <= 0){
+            console.log(`***You died, I guess you don't have what it takes to be an ODST***`);
+            printLevel(4);
+            return -100; //get to default branch in the loop
         }
     }
 }
