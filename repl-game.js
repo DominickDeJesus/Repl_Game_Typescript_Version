@@ -139,20 +139,20 @@ while (stillPlaying) {
         case 4:
             printLevel(phase);
         default:
-            let input = prompt.keyInYN("Do you want to stop playing?");
-            while(!input){
+            let ask = true;
+            while(ask){
+                let input = prompt.keyInYN("Do you want to stop playing?");
                 if (input === '') {
                     console.log("Bad input!");
-                } else {
+                } else if(!input){
+                    stillPlaying = false;
+                    ask= false;                }
+                else{
                     phase = 1;
                     resetGame();
-                    stillPlaying = false;
-                    break;
+                    ask= false;
                 }
-                input = prompt.keyInYN("Do you want to stop playing?");
             }
-            phase = 1;
-            resetGame();
             break;
     }
 }
