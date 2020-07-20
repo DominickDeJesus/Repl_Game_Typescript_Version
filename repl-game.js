@@ -80,7 +80,7 @@ const player = {
         }
         else if (enemy.name === "brute") {
             enemy.health = enemy.health - 1;
-            console.log(`***You yell that he brute isn't as cool as he thinks he is***`);
+            console.log(`***You yell that the brute isn't as cool as he thinks he is***`);
             console.log(`***The brute pretends it doesn't hurt him but takes 1 damage***`);
         }
         else if (enemy.name === "hunter") {
