@@ -109,8 +109,6 @@ const player = {
     }
 }
 
-//console.log( "Halo: ODST" );
-
 console.log(`
  __    __       ___       __        ______           ______    _______       _______.___________.
 |  |  |  |     /   \\     |  |      /  __  \\   _     /  __  \\  |       \\     /       |           |
@@ -129,18 +127,20 @@ while (stillPlaying) {
     switch (phase) {
         case 1:
             printLevel(phase);
-            phase = phase + level(npc.grunt, phase);
+            phase = phase + level(npc.grunt);
             break;
         case 2:
             printLevel(phase);
-            phase = phase + level(npc.brute, phase);
+            phase = phase + level(npc.brute);
             break;
         case 3:
             printLevel(phase);
-            phase = phase + level(npc.hunter, phase);
+            phase = phase + level(npc.hunter);
             break;
+        case 4:
+            printLevel(phase);
         default:
-            if (prompt.keyInYN("Do you want to keep playing?")) {
+            if (!prompt.keyInYN("Do you want to stop playing?")) {
                 phase = 1;
                 resetGame();
             } else {
@@ -150,14 +150,18 @@ while (stillPlaying) {
     }
 }
 
-//phase 1: grunt fight
-function level(enemy, level) {
+//level structures
+function level(enemy) {
     quitGame = false;
     while (!quitGame) {
+        console.log("");
+
         player.printStats();
         console.log("What do you want to do?");
         let option = prompt.questionInt("Options:\n [1] Shoot\n [2] Throw grenade\n [3] Verbally abuse\n [4] Use health pack\n [5] Search for supplies\n [6] Quit level\n");
-
+        
+        console.log("");
+        
         let hit = 0;
         //players turn
         switch (option) {
@@ -166,7 +170,7 @@ function level(enemy, level) {
                 hit = enemy.damageGun();
                 enemy.health = enemy.health - hit;
                 console.log(`***You shoot at the ${enemy.name} with your assault rifle***`);
-                console.log(`***The grunt takes ${hit} damage***`);
+                console.log(`***The ${enemy.name} takes ${hit} damage***`);
                 break;
             //throw grenade
             case 2:
@@ -175,7 +179,7 @@ function level(enemy, level) {
                     enemy.health = enemy.health - hit;
                     player.grenades--;
                     console.log(`***You throw a grenade at the ${enemy.name}***`);
-                    console.log(`***The grunt takes ${hit} damage***`);
+                    console.log(`***The ${enemy.name} takes ${hit} damage***`);
                 }
                 else {
                     console.log("***You don't have any grenades***");
@@ -201,14 +205,16 @@ function level(enemy, level) {
                 console.log("Incorrect input, try again.");
         }
 
+        //checks if enemy is killed
         if (enemy.health <= 0) {
             console.log(`***You killed the ${enemy.name}***`)
             return 1; // move to next phase
         }
 
-        //Grunts turn
+        //enemys turn
         enemy.takeTurn();
 
+        //check if player died
         if (player.health <= 0) {
             console.log(`***You died, I guess you don't have what it takes to be an ODST***`);
             printLevel(4);
@@ -217,165 +223,23 @@ function level(enemy, level) {
     }
 }
 
-// //phase 2: Brute fight
-// function phase2(){
-//     quitGame = false;
-//     while(!quitGame){
-//         player.printStats();
-//         console.log( "What do you want to do?");
-//         let option = prompt.questionInt( "Options:\n [1] Shoot\n [2] Throw grenade\n [3] Verbally abuse\n [4] Use Medkit\n [5] Search for Supplies\n [6] Quit Level\n" );
-//         let hit= 0;
-
-//         //players turn
-//         switch(option) {
-//             //Shoot
-//             case 1:
-//                 hit = player.damageGun();
-//                 brute.health = brute.health - hit;
-//                 console.log(`***You shoot at the brute with your assault rifle***`);
-//                 console.log(`***The brute takes ${hit} damage***`);
-//                 break;
-//             //throw grenade
-//             case 2:
-//                 if(player.grenades > 0){
-//                     hit = player.damageGrenade();
-//                     brute.health = brute.health - hit;
-//                     player.grenades--;
-//                     console.log(`***You throw a grenade at the brute***`);
-//                     console.log(`***The brute takes ${hit} damage***`);
-//                 }
-//                 else{
-//                     console.log("***You don't have any grenades***");
-//                 }          
-//                 break;
-//             //Verbally abuse
-//             case 3:
-//                 brute.health = brute.health -1;
-//                 console.log(`***You yell that he brute isn't as cool as he thinks he is***\n***The brute pretends it doesn't hurt him but takes 1 damage***`);
-//               break;
-//             //Use Medkit
-//             case 4:
-//                 player.useHealthpack();
-//                 break;
-//             case 5:
-//                 suppliesCheck();
-//                 break;
-//             case 6:
-//                 console.log("Quiting game.")
-//                 return -100;
-//             default: 
-//               console.log( "Incorrect input, try again." );
-//         }
-
-//         //burte is dead
-//         if(brute.health <= 0) {
-//             console.log(`***You killed the brute***`)
-//             return 1; // move to next phase
-//         }
-
-//         //brutes turn
-//         brute.takeTurn();
-
-//         //Player died
-//         if(player.health <= 0){
-//             console.log(`***You died, I guess you don't have what it takes to be an ODST***`);
-//             printLevel(4);
-//             return -100; //get to default branch in the loop
-//         }
-//     }
-// }
-
-
-// //phase 3: hunter fight
-// function phase3(){
-//     quitGame = false;
-//     while(!quitGame){
-//         player.printStats();
-//         console.log( "What do you want to do?");
-//         let option = prompt.questionInt( "Options:\n [1] Shoot\n [2] Throw grenade\n [3] Verbally abuse\n [4] Use Medkit\n [5] Search for Supplies\n [6] Quit Level\n" );
-//         console.log("\n");
-//         let hit= 0;
-
-//         //players turn
-//         switch(option) {
-//             //Shoot
-//             case 1:
-//                 hit = player.damageGun();
-//                 hunter.health = hunter.health - hit;
-//                 console.log(`***You shoot at the hunter with your assault rifle***`);
-//                 console.log(`***The hunter takes ${hit} damage***`);
-//                 break;
-//             //throw grenade
-//             case 2:
-//                 if(player.grenades > 0){
-//                     hit = player.damageGrenade();
-//                     hunter.health = hunter.health - hit;
-//                     player.grenades--;
-//                     console.log(`***You throw a grenade at the hunter***`);
-//                     console.log(`***The hunter takes ${hit} damage***`);
-//                 }
-//                 else{
-//                     console.log("***You don't have any grenades***");
-//                 }          
-//                 break;
-//             //Verbally abuse
-//             case 3:
-//                 hunter.health = hunter.health - 5;
-//                 console.log(`***You yell profanities about the hunter's mother***\n***The hunter is shocked and takes 5 damage***`);
-//                 break;
-//             //Use health packs
-//             case 4:
-//                 player.useHealthpack();
-//                 break;
-//             case 5:
-//                 suppliesCheck();
-//                 break;
-//             case 6:
-//                 console.log("Quiting game")
-//                 return -100;
-//             default: 
-//               console.log( "Incorrect input, try again." );
-//         }
-
-//         //hunter died
-//         if(hunter.health <= 0) {
-//             console.log(`***You killed the Hunter***`)
-//             return 1; // move to next phase
-//         }
-
-//         //Hunters turn
-//         hunter.takeTurn();
-
-//         //Player died
-//         if(player.health <= 0){
-//             console.log(`***You died, I guess you don't have what it takes to be an ODST***`);
-//             printLevel(4);
-//             return -100; //get to default branch in the loop
-//         }
-//     }
-// }
-
 // randomly gives the player a grenade, healthpack, or nothing.
 function suppliesCheck() {
     let chanceNumer = Math.floor(Math.random() * (8 - 1)) + 1;
-
-    //    console.log(chanceNumer)
-
     if (chanceNumer === 1) {
-        console.log("You find a healthpack.");
+        console.log("***You find a healthpack***");
         player.healthPacks++;
     } else if (chanceNumer === 2) {
-        console.log("You find a grenade.");
+        console.log("***You find a grenade***");
         player.grenades++;
     } else if (chanceNumer === 3) {
-        console.log("You find a healthpack and a grenade.");
+        console.log("***You find a healthpack and a grenade***");
         player.healthPacks++;
         player.grenades++;
     } else {
-        console.log("You look around but you don't see anything.");
+        console.log("***You look around but you don't see anything***");
     }
 }
-
 
 //prints the level title
 function printLevel(level) {
@@ -386,7 +250,9 @@ function printLevel(level) {
                 |L|e|v|e|l| |1|:| |G|r|u|n|t| |P|u|n|c|h|
                 +-+-+-+-+-+ +-+-+ +-+-+-+-+-+ +-+-+-+-+-+
             `);
-            console.log("\n***You see a grunt taking a nap next to a tree***\n");
+            console.log("\n***You drop down from your ship and land alone behind enemy lines***");
+            console.log("***Your mission is to rescue a stranded ONI politician***");
+            console.log("***You look around and see a grunt taking a nap next to a tree***");
             break;
         case 2:
             console.log(`
@@ -396,7 +262,7 @@ function printLevel(level) {
             `);
             console.log("\n***You move to the body of the dead grunt and confirm the kill***")
             console.log("***You make your way down the street slowly ducking bewteen covers making your way to the objective***")
-            console.log("***You see a brute standing outside the entrance of the building***\n");
+            console.log("***You see a brute standing outside the entrance of the last know location of the politician***");
             break;
         case 3:
             console.log(`            
@@ -404,14 +270,23 @@ function printLevel(level) {
                 |L|e|v|e|l| |3|:| |T|h|e| |H|u|n|t|e|d|
                 +-+-+-+-+-+ +-+-+ +-+-+-+ +-+-+-+-+-+-+
             `);
-            console.log("\n***As you finish off the brute, A hunter bursts through the entrance of the building and shrieks***\n");
+            console.log("***As you finish off the brute, A hunter bursts through the entrance of the building and shrieks***");
+            break;
+        case 4:
+            console.log(`
+            +-+-+-+-+ +-+-+-+-+-+
+            |G|a|m|e| |O|v|e|r|!|
+            +-+-+-+-+ +-+-+-+-+-+            
+            `);
             break;
         default:
-            console.log(`
-                        +-+-+-+-+ +-+-+-+-+-+
-                        |G|a|m|e| |O|v|e|r|!|
-                        +-+-+-+-+ +-+-+-+-+-+            
-            `);
+            console.log("***You search the building and find the politician in his office hiding under his desk***");
+            console.log("***You and the politician escape and make it back to base***");
+            console.log(` 
+                +-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+
+                |M|i|s|s|i|o|n| |C|o|m|p|l|e|t|e|!|
+                +-+-+-+-+-+-+-+ +-+-+-+-+-+-+-+-+-+
+                `)
             break;
     }
 }
@@ -422,7 +297,7 @@ function randNum(min, max) {
 
 function resetGame() {
     player.reset();
-    grunt.reset();
-    brute.reset();
-    hunter.reset();
+    npc.grunt.reset();
+    npc.brute.reset();
+    npc.hunter.reset();
 }
