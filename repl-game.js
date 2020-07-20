@@ -17,8 +17,8 @@ const npc = {
         maxHP: 10,
         health: 10,
         name: "brute",
-        damageGun: function () { return randNum(1, 5); },
-        damageMele: function () { return randNum(2, 8); },
+        damageGun: function () { return randNum(3, 6); },
+        damageMele: function () { return randNum(4, 10); },
         takeTurn: function () {
             let dmg;
             if (this.health < (this.maxHP / 2)) {
@@ -39,8 +39,8 @@ const npc = {
         maxHP: 15,
         health: 15,
         name: "hunter",
-        damageGun: function () { return randNum(3, 6); },
-        damageMele: function () { return randNum(3, 10) },
+        damageGun: function () { return randNum(3, 9); },
+        damageMele: function () { return randNum(5, 13) },
         takeTurn: function () {
             let dmg;
             if (this.health < (this.maxHP / 2)) {
@@ -62,7 +62,7 @@ const npc = {
 }
 
 const player = {
-    maxHP: 200,
+    maxHP: 20,
     health: 20,
     grenades: 2,
     healthPacks: 1,
@@ -123,7 +123,6 @@ let phase = 1;
 
 //Main game logic
 while (stillPlaying) {
-    console.log(phase);
     switch (phase) {
         case 1:
             printLevel(phase);
